@@ -61,7 +61,7 @@ class SiameseNN:
         sqrt_feature_distance = tf.sqrt(feature_distance, name="dist")
 
         positive = tf.multiply(pos_label, feature_distance, name="pos")
-        negative = tf.multiply(neg_label, tf.pow(tf.maximum(tf.substract(margin-sqrt_feature_distance), 0.0), 2), name="neg")
+        negative = tf.multiply(neg_label, tf.pow(tf.maximum(tf.subtract(margin, sqrt_feature_distance), 0.0), 2), name="neg")
         losses = tf.add(positive,negative, name="losses")
         loss = tf.reduce_mean(losses, name="loss")
         
