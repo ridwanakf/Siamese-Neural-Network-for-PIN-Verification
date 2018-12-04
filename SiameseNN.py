@@ -1,14 +1,13 @@
 import tensorflow as tf
 
-
 class SiameseNN:
 
     # Create Model
     def __init__(self, num_of_input_features):
-        self.input1 = tf.placeholder(tf.float32, [None, num_of_input_features])
-        self.input2 = tf.placeholder(tf.float32, [None, num_of_input_features])
+        self.input1 = tf.placeholder(tf.float32, [None, num_of_input_features], name='input1')
+        self.input2 = tf.placeholder(tf.float32, [None, num_of_input_features], name='input2')
 
-        with tf.variable_scope("SiameseNN") as scope:
+        with tf.variable_scope('SiameseNN') as scope:
             self.output1 = self.create_network(self.input1)
             scope.reuse_variables()
             self.output2 = self.create_network(self.input2)
@@ -19,18 +18,15 @@ class SiameseNN:
 
     # Setup Networks
     def create_network(self, input):
-        dense1 = self.dense(input, 512, "dense1")
+        dense1 = self.dense(input, 1024, 'dense1')
         activation_func1 = tf.nn.relu(dense1)
 
-        dense2 = self.dense(activation_func1, 512, "dense2")
+        dense2 = self.dense(activation_func1, 1024, 'dense2')
         activation_func2 = tf.nn.relu(dense2)
 
-        dense3 = self.dense(activation_func2, 512, "dense3")
-        activation_func3 = tf.nn.relu(dense3)
-
-        dense4 = self.dense(activation_func3, 128, "dense1")
-
-        return dense4
+        dense3 = self.dense(activation_func2, 2, 'dense3')
+        
+        return dense3
 
     # Setup Dense Neurons
     def dense(self, input_layer, num_of_weights, name):
@@ -50,19 +46,19 @@ class SiameseNN:
     def compute_loss(self, bias):
         # using contrastive loss function
 
-        margin = tf.constant(bias, name="margin")
+        margin = tf.constant(bias, name='margin')
         # label for positive (similar) inputs
         pos_label = self.y_true
         # label for negatif (not similar) inputs
-        neg_label = tf.subtract(1.0, self.y_true, name="1-y")
+        neg_label = tf.subtract(1.0, self.y_true, name='1-y')
 
         feature_distance = tf.pow(tf.subtract(self.output1, self.output2), 2)
-        feature_distance = tf.reduce_sum(feature_distance, 1, name="dist**2")
-        sqrt_feature_distance = tf.sqrt(feature_distance, name="dist")
+        feature_distance = tf.reduce_sum(feature_distance, 1, name='dist2')
+        sqrt_feature_distance = tf.sqrt(feature_distance+1e-6, name='dist')
 
-        positive = tf.multiply(pos_label, feature_distance, name="pos")
-        negative = tf.multiply(neg_label, tf.pow(tf.maximum(tf.subtract(margin, sqrt_feature_distance), 0.0), 2), name="neg")
-        losses = tf.add(positive,negative, name="losses")
-        loss = tf.reduce_mean(losses, name="loss")
+        positive = tf.multiply(pos_label, feature_distance, name='pos')
+        negative = tf.multiply(neg_label, tf.pow(tf.maximum(tf.subtract(margin, sqrt_feature_distance), 0.0), 2), name='neg')
+        losses = tf.add(positive,negative, name='losses')
+        loss = tf.reduce_mean(losses, name='loss')
         
         return loss

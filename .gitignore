@@ -1,2 +1,8 @@
 # Saved model
 *.ckpt
+/saved_models
+/graphs
+/__pycache__
+*.pb
+*.tflite
+*.txt
