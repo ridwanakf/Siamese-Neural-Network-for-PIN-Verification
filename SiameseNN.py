@@ -1,3 +1,6 @@
+# Created by Ridwan Afwan Karim Fauzi
+# https://www.github.com/ridwanakf
+
 import tensorflow as tf
 
 class SiameseNN:

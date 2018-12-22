@@ -1,9 +1,11 @@
+# Created by Ridwan Afwan Karim Fauzi
+# https://www.github.com/ridwanakf
+
 ### Libraries and Modules ###
 import tensorflow as tf
 import numpy as np
 #from sklearn.model_selection import train_test_split
 import time
-from builtins import input
 
 import SiameseNN as snn
 from helper_function import parse_json
@@ -11,14 +13,14 @@ from helper_function import get_batch
 from helper_function import get_label
 
 ### Hyperparameters ###
-iteration = 200000
+iteration = 2000000
 learning_rate = 0.001
 num_of_input_features = 54
 
 
 ### Directories ###
-dir_dataset = '../../datasets/tapping_behaviour_new.json'
-dir_model = 'saved_models/new/model_new.ckpt'
+dir_dataset = '../../datasets/speedhack.json'
+dir_model = 'saved_models/flex/model_new.ckpt'
 
 data_X, data_y = parse_json(dir_dataset)  # to parse the json data
 
@@ -34,21 +36,20 @@ init = tf.global_variables_initializer()
 
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.85
-
-### Load Previous Checkpoint or Not ###
-
-load = False # change this to True if you want to resume training
-if load:
-	saver.restore(sess, dir_model)
-	print("LOADED")
-else:
-	year, month, day, hour, minute = time.strftime("%Y,%m,%d,%H,%M").split(',')
-	date = year + '_' + month + '_' + day + '_' + hour + '_' + minute
-	dir_model = 'saved_models/model_' + date + '_.ckpt'
 	
 ### Run TensorFlow Session ###
 with tf.Session(config=config) as sess:
     sess.run(init)
+
+    ### Load Previous Checkpoint or Not ###
+    load = False # change this to True if you want to resume training
+    if load:
+        saver.restore(sess, dir_model)
+        print("LOADED")
+    else:
+        year, month, day, hour, minute = time.strftime("%Y,%m,%d,%H,%M").split(',')
+        date = year + '_' + month + '_' + day + '_' + hour + '_' + minute
+        dir_model = 'saved_models/model_' + date + '_.ckpt'
 
     # Start the training
     for step in range(iteration):
@@ -57,7 +58,7 @@ with tf.Session(config=config) as sess:
         batch_x2, batch_y2 = get_batch(10, data_X, data_y)
         batch_y = get_label(batch_y1, batch_y2)
         
-        # presentation for similar vs not similar pair
+        # percentage for similar vs not similar pair
         percentage = sum(batch_y) / len(batch_y)
 
         _, loss = sess.run([train, people.loss], feed_dict={

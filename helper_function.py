@@ -1,3 +1,6 @@
+# Created by Ridwan Afwan Karim Fauzi
+# https://www.github.com/ridwanakf
+
 import json
 import os
 import random
@@ -11,7 +14,7 @@ def parse_json(dataset_dir):
     y = []
     person_key = []
 
-    num_sample = 10  # 5 sample per person
+    num_sample = 5  # 5 sample per person
     for person in data:
         person_key.append(person)
         for i in range(num_sample):
